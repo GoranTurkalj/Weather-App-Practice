@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <link rel="stylesheet" href="./styles/style.css" />
+    <script src="https://unpkg.com/axios/dist/axios.min.js" defer></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+    />
+    <script src="/scripts/app.js" defer></script>
+  </head>
+  <body>
+    <!--This main holds current city weather elements-->
+    <main class="current-weather">
+      <h1>Weather in New York is <span>RAINY</span></h1>
+      <!--This div holds all my information divs-->
+      <div class="date">
+        <h2 class="section-title section-title--date">Friday</h2>
+        <p class="date-day">September 15</p>
+      </div>
+      <div class="temperature">
+        <h2 class="section-title">Temperature</h2>
+        <p class="reading">High: 30 &deg;C</p>
+        <p class="reading">Low: -23 &deg;C</p>
+      </div>
+      <div class="wind">
+        <h2 class="section-title">Wind</h2>
+        <p class="reading">75 kph</p>
+        <!--This div is the  wheel for wind direction-->
+        <div class="wind-direction">
+          <!--paragraf holds the degree at which wind blows and is only for screen-readers-->
+          <!-- <p class="sr-only">45deg</p> -->
+          <!--Custom property will be adjustable through JS-->
+          <div class="wind-arrow"></div>
+        </div>
+      </div>
+      <!--This div holds all textual info-->
+      <div class="additional-info">
+        <p>
+          Look up any city on Earth to find out what the current weather
+          condition is, along with weather history for 5 previous days.
+        </p>
+        <p>
+          This is only a small example of utilizing
+          <span>OpenWeatherMap API</span>.
+          <a href="https://openweathermap.org/" target="_blank">Click here</a>
+          to learn more.
+        </p>
+      </div>
+
+      <div class="unit">
+        <label for="cel">&deg;C</label>
+        <input type="radio" id="cel" name="unit" checked hidden />
+        <!--When unit toggle is clicked
+            checkbox needs to change-->
+        <button class="unit__toggle"></button>
+        <label for="fah">&deg;F</label>
+        <input type="radio" id="fah" name="unit" hidden />
+      </div>
+    </main>
+
+    <!--Structuring 5 previous days-->
+    <div class="previous-weather">
+      <label for="arrow"><i class="fas fa-arrow-up"></i></label>
+      <h1>Previous 5 days</h1>
+      <div class="previous-days">
+        <div class="previous-day">
+          <h2 class="previous-day__name">Monday</h2>
+          <p class="previouse-day__date">September 19</p>
+          <p class="reading">High: 30 C</p>
+          <p class="reading">Low: -12 C</p>
+          <button class="previouse-day__more-info">more info</button>
+        </div>
+        <div class="previous-day">
+          <h2 class="previous-day__name">Monday</h2>
+          <p class="previouse-day__date">September 19</p>
+          <p class="reading">High: 30 C</p>
+          <p class="reading">Low: -12 C</p>
+          <button class="previouse-day__more-info">more info</button>
+        </div>
+        <div class="previous-day">
+          <h2 class="previous-day__name">Monday</h2>
+          <p class="previouse-day__date">September 19</p>
+          <p class="reading">High: 30 C</p>
+          <p class="reading">Low: -12 C</p>
+          <button class="previouse-day__more-info">more info</button>
+        </div>
+        <div class="previous-day">
+          <h2 class="previous-day__name">Monday</h2>
+          <p class="previouse-day__date">September 19</p>
+          <p class="reading">High: 30 C</p>
+          <p class="reading">Low: -12 C</p>
+          <button class="previouse-day__more-info">more info</button>
+        </div>
+        <div class="previous-day">
+          <h2 class="previous-day__name">Monday</h2>
+          <p class="previouse-day__date">September 19</p>
+          <p class="reading">High: 30 C</p>
+          <p class="reading">Low: -12 C</p>
+          <button class="previouse-day__more-info">more info</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
