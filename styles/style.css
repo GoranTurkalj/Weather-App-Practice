@@ -129,11 +129,26 @@ h3 {
   -ms-grid-column: 1;
   -ms-grid-column-span: 1;
   grid-column: 1/2;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+}
+
+.date #weather-icon {
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+  -ms-grid-column-align: center;
+      justify-self: center;
+  width: 50px;
+  height: 50px;
+  font-size: 2rem;
 }
 
 .date p {
   color: var(--clr-h2);
-  font-size: var(--fs-h2);
+  font-size: var(--fs-h1);
   font-weight: var(--fw-light);
 }
 

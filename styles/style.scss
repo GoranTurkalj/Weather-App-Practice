@@ -130,9 +130,20 @@ h3 {
 .date {
   grid-column: 1/2;
 
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  #weather-icon {
+    align-self: center;
+    justify-self: center;
+    width: 50px; 
+    height: 50px;
+    font-size: 2rem;
+  }
+
   p {
     color: var(--clr-h2);
-    font-size: var(--fs-h2);
+    font-size: var(--fs-h1);
     font-weight: var(--fw-light);
   }
 }
