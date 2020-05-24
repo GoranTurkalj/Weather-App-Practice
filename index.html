@@ -20,6 +20,15 @@
     <!--This main holds current city weather elements-->
     <main class="current-weather">
       <h1>Weather in New York is <span>RAINY</span></h1>
+      <div class="search-container">
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Enter city name / zipcode"
+        />
+        <button id="sarch-btn">SEARCH</button>
+      </div>
+
       <!--This div holds all my information divs-->
       <div class="date">
         <h2 class="section-title section-title--date">Friday</h2>
@@ -68,42 +77,42 @@
 
     <!--Structuring 5 previous days-->
     <div class="previous-weather">
-      <label for="arrow"><i class="fas fa-arrow-up"></i></label>
+      <button id="show-previous-btn"><i class="fas fa-arrow-up"></i></button>
       <h1>Previous 5 days</h1>
       <div class="previous-days">
         <div class="previous-day">
-          <h2 class="previous-day__name">Monday</h2>
-          <p class="previouse-day__date">September 19</p>
-          <p class="reading">High: 30 C</p>
-          <p class="reading">Low: -12 C</p>
+          <h3 class="previous-day__name">Monday</h3>
+          <p class="previous-day__date">September 19</p>
+          <p class="previous-reading">High: 30 C</p>
+          <p class="previous-reading">Low: -12 C</p>
+          <button class="previous-day__more-info">more info</button>
+        </div>
+        <div class="previous-day">
+          <h3 class="previous-day__name">Monday</h3>
+          <p class="previous-day__date">September 19</p>
+          <p class="previous-reading">High: 30 C</p>
+          <p class="previous-reading">Low: -12 C</p>
           <button class="previouse-day__more-info">more info</button>
         </div>
         <div class="previous-day">
-          <h2 class="previous-day__name">Monday</h2>
-          <p class="previouse-day__date">September 19</p>
-          <p class="reading">High: 30 C</p>
-          <p class="reading">Low: -12 C</p>
+          <h3 class="previous-day__name">Monday</h3>
+          <p class="previous-day__date">September 19</p>
+          <p class="previous-reading">High: 30 C</p>
+          <p class="previous-reading">Low: -12 C</p>
           <button class="previouse-day__more-info">more info</button>
         </div>
         <div class="previous-day">
-          <h2 class="previous-day__name">Monday</h2>
-          <p class="previouse-day__date">September 19</p>
-          <p class="reading">High: 30 C</p>
-          <p class="reading">Low: -12 C</p>
+          <h3 class="previous-day__name">Monday</h3>
+          <p class="previous-day__date">September 19</p>
+          <p class="previous-reading">High: 30 C</p>
+          <p class="previous-reading">Low: -12 C</p>
           <button class="previouse-day__more-info">more info</button>
         </div>
         <div class="previous-day">
-          <h2 class="previous-day__name">Monday</h2>
-          <p class="previouse-day__date">September 19</p>
-          <p class="reading">High: 30 C</p>
-          <p class="reading">Low: -12 C</p>
-          <button class="previouse-day__more-info">more info</button>
-        </div>
-        <div class="previous-day">
-          <h2 class="previous-day__name">Monday</h2>
-          <p class="previouse-day__date">September 19</p>
-          <p class="reading">High: 30 C</p>
-          <p class="reading">Low: -12 C</p>
+          <h3 class="previous-day__name">Monday</h3>
+          <p class="previous-day__date">September 19</p>
+          <p class="previous-reading">High: 30 C</p>
+          <p class="previous-reading">Low: -12 C</p>
           <button class="previouse-day__more-info">more info</button>
         </div>
       </div>
