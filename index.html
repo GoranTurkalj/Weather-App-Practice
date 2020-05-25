@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Weather App</title>
+    <title>WindsDay Weather App</title>
     <link rel="stylesheet" href="./styles/style.css" />
     <script src="https://unpkg.com/axios/dist/axios.min.js" defer></script>
     <link
@@ -14,14 +14,15 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
     />
+    <script src="./scripts/WeatherReport.js" defer></script>
     <script src="./scripts/app.js" defer></script>
   </head>
   <body>
     <!--This main holds current city weather elements-->
     <main class="current-weather">
-      <h1>
-        Weather in <span id="city-name">New York</span> is
-        <span id="weather-status">RAINY</span>
+      <h1 id="city-weather">
+        <span id="city">WindsDay Weather App</span>
+        <span id="description">stay ahead of the storm</span>
       </h1>
       <div class="search-container">
         <input
@@ -34,19 +35,22 @@
 
       <!--This div holds all my information divs-->
       <div class="date">
-        <h2 class="section-title section-title--date">Friday</h2>
+        <h2 id="day" class="section-title section-title--date">Date</h2>
+        <p class="date-day">Day of the week</p>
+        <p id="daily-temp" class="reading">
+          <span id="current-temp"></span>
+        </p>
         <img src="" alt="" id="weather-icon" />
-        <p class="date-day">September 15</p>
       </div>
       <div class="temperature">
-        <h2 class="section-title">Temperature</h2>
-        <p class="reading">Current: <span id="current-temp"></span></p>
-        <p class="reading">Max: <span id="max-temp"></span></p>
-        <p class="reading">Min: <span id="min-temp"></span></p>
+        <h2 class="section-title">Atmosphere</h2>
+        <p class="reading">Condition <span id="condition"></span></p>
+        <p class="reading">Humidity <span id="humidity"></span></p>
+        <p class="reading">Pressure <span id="pressure"></span></p>
       </div>
       <div class="wind">
         <h2 class="section-title">Wind</h2>
-        <p id="wind-speed" class="reading">75 kph</p>
+        <p id="wind-speed" class="reading">Speed</p>
         <!--This div is the  wheel for wind direction-->
         <div class="wind-direction">
           <!--paragraf holds the degree at which wind blows and is only for screen-readers-->
@@ -59,7 +63,7 @@
       <div class="additional-info">
         <p>
           Look up any city on Earth to find out what the current weather
-          condition is, along with weather history for 5 previous days.
+          condition is, along with weather forecast for the next five days.
         </p>
         <p>
           This is only a small example of utilizing
@@ -70,20 +74,21 @@
       </div>
 
       <div class="unit">
-        <label for="cel">&deg;C</label>
-        <input type="radio" id="cel" name="unit" checked hidden />
-        <!--When unit toggle is clicked
-            checkbox needs to change-->
-        <button class="unit__toggle"></button>
-        <label for="fah">&deg;F</label>
-        <input type="radio" id="fah" name="unit" hidden />
+        <label for="celsius">&deg;C</label>
+        <input type="radio" id="celsius" name="unit" checked hidden />
+        <button class="unit__toggle">
+          <!--this dive is for toggle icon-->
+          <div></div>
+        </button>
+        <label for="fahrenheit">&deg;F</label>
+        <input type="radio" id="fahrenheit" name="unit" hidden />
       </div>
     </main>
 
     <!--Structuring 5 previous days-->
     <div class="previous-weather">
       <button id="show-previous-btn"><i class="fas fa-arrow-up"></i></button>
-      <h1>Previous 5 days</h1>
+      <h1>Forecast 5 days</h1>
       <div class="previous-days">
         <div class="previous-day">
           <h3 class="previous-day__name">Monday</h3>
