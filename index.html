@@ -14,43 +14,50 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
     />
-    <script src="./scripts/WeatherReport.js" defer></script>
     <script src="./scripts/app.js" defer></script>
   </head>
   <body>
     <!--This main holds current city weather elements-->
     <main class="current-weather">
       <h1 id="city-weather">
-        <span id="city">WindsDay Weather App</span>
-        <span id="description">stay ahead of the storm</span>
+        <span id="city" data-city-name>WindsDay Weather App</span>
+        <span id="description" data-description>stay ahead of the storm</span>
       </h1>
       <div class="search-container">
-        <input
-          id="search-input"
-          type="text"
-          placeholder="Enter city name / zipcode"
-        />
+        <input id="search-input" type="text" placeholder="Enter city name" />
         <button id="search-btn">SEARCH</button>
       </div>
 
       <!--This div holds all my information divs-->
       <div class="date">
-        <h2 id="day" class="section-title section-title--date">Date</h2>
-        <p class="date-day">Day of the week</p>
+        <h2 id="day" class="section-title section-title--date" data-weekday>
+          Day
+        </h2>
+        <p class="date-day" data-date-month>Date of Month</p>
         <p id="daily-temp" class="reading">
-          <span id="current-temp"></span>
+          <span id="current-temp" data-temp></span>
         </p>
-        <img src="" alt="" id="weather-icon" />
+        <img src="" alt="" id="weather-icon" data-icon />
       </div>
-      <div class="temperature">
+      <div class="atmosphere">
         <h2 class="section-title">Atmosphere</h2>
-        <p class="reading">Condition <span id="condition"></span></p>
-        <p class="reading">Humidity <span id="humidity"></span></p>
-        <p class="reading">Pressure <span id="pressure"></span></p>
+        <p class="reading">
+          Condition <span id="condition" data-condition></span>
+        </p>
+        <p class="reading">
+          Humidity <span id="humidity" data-humidity></span>
+        </p>
+        <p class="reading">
+          Pressure <span id="pressure" data-pressure></span>
+        </p>
       </div>
       <div class="wind">
         <h2 class="section-title">Wind</h2>
-        <p id="wind-speed" class="reading">Speed</p>
+        <p class="reading">Speed <span id="wind-speed" data-speed></span></p>
+        <p class="reading">
+          Direction <span id="wind-direction-deg" data-direction></span>
+        </p>
+
         <!--This div is the  wheel for wind direction-->
         <div class="wind-direction">
           <!--paragraf holds the degree at which wind blows and is only for screen-readers-->
@@ -85,47 +92,20 @@
       </div>
     </main>
 
-    <!--Structuring 5 previous days-->
-    <div class="previous-weather">
-      <button id="show-previous-btn"><i class="fas fa-arrow-up"></i></button>
-      <h1>Forecast 5 days</h1>
-      <div class="previous-days">
-        <div class="previous-day">
-          <h3 class="previous-day__name">Monday</h3>
-          <p class="previous-day__date">September 19</p>
-          <p class="previous-reading">High: 30 C</p>
-          <p class="previous-reading">Low: -12 C</p>
-          <button class="previous-day__more-info">more info</button>
-        </div>
-        <div class="previous-day">
-          <h3 class="previous-day__name">Monday</h3>
-          <p class="previous-day__date">September 19</p>
-          <p class="previous-reading">High: 30 C</p>
-          <p class="previous-reading">Low: -12 C</p>
-          <button class="previouse-day__more-info">more info</button>
-        </div>
-        <div class="previous-day">
-          <h3 class="previous-day__name">Monday</h3>
-          <p class="previous-day__date">September 19</p>
-          <p class="previous-reading">High: 30 C</p>
-          <p class="previous-reading">Low: -12 C</p>
-          <button class="previouse-day__more-info">more info</button>
-        </div>
-        <div class="previous-day">
-          <h3 class="previous-day__name">Monday</h3>
-          <p class="previous-day__date">September 19</p>
-          <p class="previous-reading">High: 30 C</p>
-          <p class="previous-reading">Low: -12 C</p>
-          <button class="previouse-day__more-info">more info</button>
-        </div>
-        <div class="previous-day">
-          <h3 class="previous-day__name">Monday</h3>
-          <p class="previous-day__date">September 19</p>
-          <p class="previous-reading">High: 30 C</p>
-          <p class="previous-reading">Low: -12 C</p>
-          <button class="previouse-day__more-info">more info</button>
-        </div>
+    <!--Template for a forecast day card-->
+    <template id="forecast-template">
+      <div class="forecast-day" data-fc-day>
+        <h3 class="forecast-day__name" data-fc-name></h3>
+        <p class="forecast-day__date" data-fc-date></p>
+        <img src="" alt="forecast-icon" data-fc-icon />
+        <button class="forecast-day__more-info" data-info-btn>more info</button>
       </div>
+    </template>
+    <!--Structuring 5 previous days-->
+    <div class="forecast-weather">
+      <button id="show-forecast-btn"><i class="fas fa-arrow-up"></i></button>
+      <h1>Forecast 5 days</h1>
+      <div class="forecast-days"></div>
     </div>
   </body>
 </html>
