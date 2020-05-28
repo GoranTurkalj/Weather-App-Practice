@@ -9,11 +9,11 @@
 :root {
   //colors
   --clr-h1: rgb(26, 110, 219);
-  //--clr-h2: rgb(184, 180, 180);
   --clr-h2: rgb(153, 159, 160);
   --clr-h3: rgb(74, 80, 88);
   --clr-accent: rgb(43, 46, 40);
   --clr-dark: rgb(73, 17, 17);
+  --clr-background: rgb(26, 110, 219, 0.6);
 
   //fonts sizes
   --fs-h1: 1.5rem;
@@ -36,7 +36,6 @@
   --size: 8rem;
 
   // stuff
-
   --direction: 0deg;
 }
 
@@ -173,7 +172,7 @@ h3 {
   }
 }
 
-.temperature {
+.atmosphere {
   grid-column: 2/3;
   border-left: var(--border);
   border-right: var(--border);
@@ -184,16 +183,15 @@ h3 {
   grid-column: 3/4;
   display: grid;
   grid-template-columns: 2fr 3fr;
-  //Ovo mi treba jer min-content daje prvi red tek toliko koliko treba za content a ostatak ide drugom, pa je smanjilo razmak između h1 i p
-  grid-template-rows: min-content 1fr;
+  grid-template-rows: 40px 30px;
 
   //H1 and paragraph in .wind div are grid elements also.
   .section-title {
-    grid-column: 1/2;
+    grid-column: 2/3;
   }
 
   .reading {
-    grid-column: 1/2;
+    grid-column: 2/3;
   }
 
   &-direction {
@@ -206,23 +204,23 @@ h3 {
     background-repeat: no-repeat;
     border: 1px solid white;
     border-radius: 50%;
-    grid-column: 2/3;
+    grid-column: 1/2;
     grid-row: 1 / span 2;
     display: grid;
-    align-self: center;
+    justify-self: flex-start;
     place-items: center; //shorthand for align-items i justify-items
   }
 
   // This will be the arrow in the circle - the custom property can be adjusted with JS
 
   &-arrow {
-    background-color: rgb(148, 19, 19);
-    width: 0.7rem;
-    height: calc(var(--size) / 2);
-    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
-    //Arrow will be rotated from JS when I get the wind angle
-    transform: translateY(-50%) rotateZ(var(--direction)); //custom property is used here
-    transform-origin: center bottom;
+    background: linear-gradient(rgb(255, 254, 254) 50%, rgb(148, 19, 19) 50%);
+    width: 0.8rem;
+    height: 100%;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    //Arrow will be rotated from JS when I get the wind direction
+    transform: rotateZ(var(--direction)); //custom property is used here
+    transform-origin: center;
     transition: transform 1000ms;
   }
 }
@@ -294,41 +292,50 @@ h3 {
   padding-left: 40px;
 }
 
-// Previous Days  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+// forecast-weather  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-.previous-weather {
+.forecast-weather {
   transition: transform 500ms, border-radius 500ms;
   width: 100vw;
+  height: 35vh;
   display: flex;
   flex-direction: column;
   justify-content: start;
   padding: 0 4.7rem;
   padding-bottom: 1rem;
-  background-color: rgb(255, 255, 255);
+  background-image: linear-gradient(
+    rgba(255, 255, 255, 0.9),
+    var(--clr-background)
+  );
   border-radius: 10vmax 10vmax 0 0;
   position: absolute;
   bottom: 0%;
-  transform: translateY(76%);
+  transform: translateY(70%);
 
   h1 {
     transition: all 400ms;
+    width: 300px;
     color: var(--clr-h1);
     font-size: var(--fs-h1);
     text-transform: uppercase;
     letter-spacing: 2px;
     margin: 2rem 0 1rem 0;
     text-shadow: var(--txt-shadow-small);
-    padding-left: 42%;
+    //pozicioniranje radi centriranja
+    text-align: center;
+    position: relative; // absolute mi poremeti document flow
+    left: 50%;
+    margin-left: -150px; // negativni margin je POLA širine elementa, da ga centrira lakše horizontalno kad koristim left 50%
   }
 
-  //Button which shows weather for previous days
-  #show-previous-btn {
+  //Button which shows forecast for 5 days
+  #show-forecast-btn {
     transition: width 500ms;
     position: absolute;
     left: 50%;
     transform: translate(-50%, -99%);
-    background-color: rgb(255, 255, 255);
-    width: 10rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    width: 7rem;
     text-align: center;
     font-size: 1.5rem;
     line-height: 1;
@@ -339,36 +346,33 @@ h3 {
 
     i {
       transition: transform 200ms;
-      color: var(--clr-accent);
+      color: var(--clr-h1);
       padding-top: 0.5rem;
       transform: translateY(0.5rem);
-    }
-    &:hover > i,
-    &:focus > i,
-    &:active > i {
-      color: var(--clr-h1);
     }
   }
 }
 
-//show-weather gets attached to .previous-weather when button is clicked
-.show-weather {
+//show-forecast gets attached to .forecast-weather when button is clicked
+.show-forecast {
   transform: translateY(0%);
   border-radius: 0;
 
   h1 {
-    padding-left: 0%;
+    text-align: start;
+    margin-left: 0;
+    left: 0%;
   }
 
   i {
     transform: rotateZ(180deg);
   }
 
-  .previous-day {
+  .forecast-day {
     animation: animateWeatherCard 500ms ease-out forwards;
   }
 
-  #show-previous-btn {
+  #show-forecast-btn {
     width: 20rem;
     i {
       transform: rotateX(180deg) translateY(-1rem);
@@ -376,19 +380,30 @@ h3 {
   }
 }
 
-.previous-days {
+// container for individual forecast day cards
+.forecast-days {
   width: 100%;
-  height: 100%;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
-.previous-day {
+//forecast day card
+.forecast-day {
   opacity: 0%;
   display: flex;
   flex-direction: column;
   padding: 1rem 0.5rem 1rem 0;
   width: 15%;
+
+  img {
+    transition: transform 250ms;
+    align-self: start;
+    justify-self: center;
+    width: 75px;
+    height: 75px;
+    font-size: 2rem;
+  }
 
   button {
     transition: transform 200ms;
@@ -397,8 +412,7 @@ h3 {
     font-size: 1rem;
     text-transform: uppercase;
     padding: 0.2rem 1rem;
-    margin-top: 2rem;
-    border: 2px solid var(--clr-h1);
+    border: 3px solid var(--clr-h1);
     border-radius: 8px;
     width: 8rem;
     outline: none;
@@ -407,6 +421,7 @@ h3 {
     &:hover,
     &:focus {
       background-color: var(--clr-h1);
+      border-color: white;
       color: white;
     }
 
@@ -416,35 +431,39 @@ h3 {
   }
 }
 
-.previous-day:nth-child(1) {
-  animation-delay: 50ms;
-}
-.previous-day:nth-child(2) {
-  animation-delay: 100ms;
-}
-.previous-day:nth-child(3) {
-  animation-delay: 150ms;
-}
-.previous-day:nth-child(4) {
-  animation-delay: 200ms;
-}
-.previous-day:nth-child(5) {
-  animation-delay: 250ms;
-}
-
-.previous-day__name {
+.forecast-day__name {
   color: var(--clr-h3);
   font-size: var(--fs-h1);
+  letter-spacing: 2px;
 }
 
-.previous-day__date {
-  color: var(--clr-h2);
+.forecast-day__date {
+  color: var(--clr-h1);
   font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  letter-spacing: 2px;
 }
 
-.previous-reading {
-  color: var(--clr-h2);
-  font-size: var(--fs-body);
+.forecast-day:hover {
+  img {
+    transform: scale(1.1);
+  }
+}
+
+.forecast-day:nth-child(1) {
+  animation-delay: 50ms;
+}
+.forecast-day:nth-child(2) {
+  animation-delay: 100ms;
+}
+.forecast-day:nth-child(3) {
+  animation-delay: 150ms;
+}
+.forecast-day:nth-child(4) {
+  animation-delay: 200ms;
+}
+.forecast-day:nth-child(5) {
+  animation-delay: 250ms;
 }
 
 @keyframes animateWeatherCard {

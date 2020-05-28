@@ -1,133 +1,245 @@
-//Selecting necessary elements
-const searchInput = document.getElementById("search-input");
-const searchBtn = document.getElementById("search-btn");
-const forecastEl = document.querySelector(".previous-weather");
-const showForecastBtn = document.getElementById("show-previous-btn");
-const unitToggleBtn = document.querySelector(".unit__toggle");
-const celsius = document.getElementById("celsius");
-const fahrenheit = document.getElementById("fahrenheit");
 const appId = "1fb47eaad4af2449cb87ab560b57403d";
 
-let searchTerm = null,
-  searchMethod = null,
-  units = "metric";
+//Selecting elements that refer to the forecast section
+const forecastContainer = document.querySelector(".forecast-weather");
+const forecastDaysEl = document.querySelector(".forecast-days");
+const forecastTemplate = document.getElementById("forecast-template");
+const forecastBtn = document.getElementById("show-forecast-btn");
 
-//Toggles 5 day forecast at the bottom of the screen
-showForecastBtn.addEventListener("click", () => {
-  forecastEl.classList.toggle("show-weather");
-});
+//Selecting elements that refer to user input
+const searchInput = document.getElementById("search-input");
+const searchBtn = document.getElementById("search-btn");
+let searchTerm = null; // this refers to the city name
 
-//Determines if search method should be zip or q (city) - called from getInput()
-function determineSearchMethod(term) {
-  let stringTest = term.split("");
+//Variables for API requests
+let units = "metric";
 
-  //Ako je term 5 znakova I ako nije NaN kad se parsa u broj, mogao bi se smatrati zip codeom
-  if (term.length === 5 && !isNaN(parseInt(term))) {
-    searchMethod = "zip";
-  }
+// currentDay holds the current weather data
 
-  //ako nije zip code, check if city name contains a number
-  else {
-    // parseInt every element
-    stringTest.forEach((element, index) => {
-      stringTest[index] = parseInt(element);
-    });
-    // iterate over elements and check if there is an actual integer - return if there is.
-    for (const element of stringTest) {
-      if (typeof element === "number" && !isNaN(element)) {
-        alert("Please enter valid city name!");
-        return;
-      }
-    }
-    searchMethod = "q";
-  }
+let currentDay = null;
 
-  console.log("Search method is: ", searchMethod);
-}
+// Array that holds raw forecast days data
+let forecastArray = [];
+//Array that holds objects with data I need to use for injecting into the DOM elements
+let daysArray = [];
 
-//Gets executed when searchHandler fires.
-function getInput() {
-  //Get the value from searchInput
-  searchTerm = searchInput.value.trim();
+//Event listener for the search button
+searchBtn.addEventListener("click", searchClickHandler);
 
-  //Provided that search term is true, determine is it a city or zip code, so searchMethod can be adjusted
-  if (searchTerm) {
-    determineSearchMethod(searchTerm);
+// Fires when searchBtn is clicked **********************************************************************************************
+function searchClickHandler() {
+  // Validate user input
+  let search = searchInput.value;
 
-    //If searchTerm is true and searchMethod is true, build a URL and send request.
-    if (searchMethod) {
-      return { term: searchTerm, method: searchMethod };
-    }
-  }
-}
-
-//Executes search and calls getWeatherInfo
-searchBtn.addEventListener("click", searchHandler);
-function searchHandler() {
-  //if getInput returns undefined, return.
-  const search = getInput();
+  //If no search is entered, return
   if (!search) {
+    alert("Please enter a city name and then click the search button!");
+    return;
+  } else {
+    searchTerm = validateInput(search);
+  }
+
+  //if searchTerm is not valid (null), return
+  if (!searchTerm) {
     return;
   }
-  //When a search is made, 2 requests will be made - first for current weather, the second for 5 days forecast
-  getWeatherInfo("weather", search.method, search.term);
+
+  //Empty searchArray, daysArray and forecastDaysEl content before making a new request!
+  forecastArray = [];
+  daysArray = [];
+  forecastDaysEl.textContent = "";
+  // if searchTerm is valid, build a URL and send request for current weather
+  getWeatherReport(searchTerm, "weather");
+  //After request has been sent, set the searchInput value to ""
+  searchInput.value = "";
 }
 
-// Gets current weather for a city
-function getWeatherInfo(type, method, term) {
-  //api.openweathermap.org/data/2.5/weather?zip={zip code},{country code}&appid={your api key}
+// Validate user input************************************************************************************************************
+function validateInput(input) {
+  let recievedInput = input.trim();
+  //Regular expression - samo slova i white space
+  const regex = /^[a-zA-Z\s]*$/;
 
-  let URL = `http://api.openweathermap.org/data/2.5/${type}?${method}=${term}&appid=${appId}&units=${units}`;
+  const result = regex.test(recievedInput);
+  console.log(result);
 
-  axios
-    .get(URL)
-    .then((response) => {
-      const i = response.data;
-      console.log(i);
-      //If request wass successful - create a report object from response.data
-      const name = i.name;
-      const condition = i.weather[0].main;
-      const description = i.weather[0].description;
-      const temperature = Math.round(i.main.temp);
-      const humidity = i.main.humidity;
-      const pressure = i.main.pressure;
-      const windSpeed = i.wind.speed;
-      const windDirection = i.wind.deg;
-      const icon = i.weather[0].icon;
-
-      const report = new WeatherReport(
-        name,
-        condition,
-        description,
-        temperature,
-        windSpeed,
-        windDirection,
-        humidity,
-        pressure,
-        icon
-      );
-
-      console.log(report);
-      report.renderReport();
-    })
-    .catch((error) => {
-      console.log(error);
-      alert("Something went wrong! Try typing correct city name!");
-    });
-}
-
-// changeTempUnit
-
-unitToggleBtn.addEventListener("click", toggleTempUnits);
-
-function toggleTempUnits() {
-  unitToggleBtn.classList.toggle("toggled");
-
-  if (unitToggleBtn.classList.contains("toggled")) {
-    fahrenheit.checked = true;
-    console.log("fahrenheit is checked");
+  if (result && recievedInput.length <= 30) {
+    return recievedInput;
   } else {
-    celsius.checked = true;
-    console.log("celsius is checked");
+    alert("Please enter valid city name!");
+    return null;
   }
+}
+
+// Get the weather report from OpenWeatherMap API****************************************************************************
+
+async function getWeatherReport(searchTerm) {
+  const weatherData = await axios
+    .get(
+      `http://api.openweathermap.org/data/2.5/weather?q=${searchTerm}&appid=${appId}&units=${units}`
+    )
+    .catch((error) => {
+      alert(error);
+    });
+  const forecastData = await axios
+    .get(
+      `http://api.openweathermap.org/data/2.5/forecast?q=${searchTerm}&appid=${appId}&units=${units}`
+    )
+    .catch((error) => {
+      alert(error);
+    });
+
+  // Create currentDay which will hold the current weather
+  if (!weatherData || !forecastData) {
+    return;
+  }
+
+  currentDay = extractWeatherInfo(weatherData.data);
+
+  displaySelectedDay(currentDay); // selectedDay će biti bilo koji od 5 dana iz donjeg dijela, koji kad klikneme će biti ubačeni u displaySelectedDay
+
+  displayForecast(forecastData);
+}
+
+//Extracts weather info from passed in object (current weather data or forecast data) **************************************
+
+function extractWeatherInfo(data) {
+  let dayName, dayOfMonth;
+
+  //Converting unix timestamp into readable date
+  let dateInfo = new Date(data.dt * 1000);
+  //Extract only weekday and day of the month and use them as values
+  dayName = dateInfo.toLocaleDateString("en-US", { weekday: "long" });
+  dayOfMonth = dateInfo.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+  });
+
+  return {
+    day: dayName,
+    date: dayOfMonth,
+    dayID: data.forecastID,
+    name: data.name,
+    condition: data.weather[0].main,
+    description: data.weather[0].description,
+    icon: data.weather[0].icon,
+    temp: Math.round(data.main.temp),
+    humidity: data.main.humidity,
+    pressure: data.main.pressure,
+    speed: Math.round((data.wind.speed * 18) / 5),
+    direction: data.wind.deg,
+  };
+}
+
+// Display selectedDay *************************************************************************************************************
+
+function displaySelectedDay(info) {
+  // Selecting elements
+
+  const weekDay = document.querySelector("[data-weekday]");
+  const date = document.querySelector("[data-date-month]");
+  const cityName = document.querySelector("[data-city-name]");
+  const condition = document.querySelector("[data-condition]");
+  const description = document.querySelector("[data-description]");
+  const icon = document.querySelector("[data-icon]");
+  const temp = document.querySelector("[data-temp]");
+  const humidity = document.querySelector("[data-humidity]");
+  const pressure = document.querySelector("[data-pressure]");
+  const windSpeed = document.querySelector("[data-speed]");
+  const windDirection = document.querySelector("[data-direction]");
+
+  // Injecting data
+
+  //Name of day
+  weekDay.textContent = info.day;
+  //Date of the month
+  date.textContent = info.date;
+  //Name of city
+  cityName.textContent = `Weather in ${info.name}`;
+  //Weather conditions
+  condition.textContent = info.condition;
+  //More detailed description of weather conditions
+  description.textContent = info.description;
+  //Weather Icon that appears on the screen
+  icon.src = `http://openweathermap.org/img/w/${info.icon}.png`;
+  //Temperature
+  temp.textContent = info.temp + " \u00B0C";
+  //Air Humidity
+  humidity.textContent = info.humidity + "%";
+  //Air Pressure
+  pressure.textContent = info.pressure + " hPa";
+  //Wind speed
+  windSpeed.textContent = info.speed + " km/h";
+
+  //Wind Direction - CSS Variable gets updated
+  let root = document.documentElement;
+  if (!info.direction) {
+    root.style.setProperty("--direction", 0 + "deg");
+    windDirection.textContent = "No Data";
+  } else {
+    root.style.setProperty("--direction", info.direction + "deg");
+    windDirection.textContent = info.direction + "\u00B0";
+  }
+}
+
+//Event listener for a button that shows the 5 days forecast
+forecastBtn.addEventListener("click", () => {
+  forecastContainer.classList.toggle("show-forecast");
+});
+
+// DisplayForecast**************************************************************************************************************
+
+function displayForecast(forecast) {
+  const { city, list } = forecast.data;
+
+  //Every day element from "list"  gets a forecastID - the forecastID will be used as data-id on "more info" buttons so I know which forecast day element from the forecast section needs to be displayed on the main screen
+  let counter = 1;
+
+  //Push elements from the recieved forecast list only if they include dt_txt with the passed in substring below
+  for (const element of list) {
+    if (element.dt_txt.includes("12:00:00")) {
+      //set up new property named "id" for the element
+      element.forecastID = counter;
+      //set up new property named "name" for the element - this only refers to forecast data because weather data already has it directly
+      element.name = city.name;
+      forecastArray.push(element);
+      counter++;
+    }
+  }
+
+  // Now display every element from the forecastArray on the "forecast 5 days" section of the screen
+  for (const el of forecastArray) {
+    //Here I extract required data from API list elements which I pushed into the forecastArray beforehand
+    const fcDay = extractWeatherInfo(el);
+
+    // Spremam fcDay objekte koji imaju samo podatke koji mi trebaju u daysArray - kasnije ne moram extractati ništa iz forecastArray
+    daysArray.push(fcDay);
+
+    //Taking content from HTML template to append required DOM elements
+    const forecastEl = forecastTemplate.content.cloneNode(true);
+    forecastEl.querySelector("[data-fc-name").textContent = fcDay.day;
+    forecastEl.querySelector("[data-fc-date]").textContent = fcDay.date;
+    forecastEl.querySelector(
+      "[data-fc-icon]"
+    ).src = `http://openweathermap.org/img/w/${fcDay.icon}.png`;
+    //buttoni dobivaju identičan id kakav ima  fcDay
+    forecastEl.querySelector("button").dataset.id = fcDay.dayID;
+    forecastDaysEl.append(forecastEl);
+  }
+
+  //Event Delegetion for button clicks
+  forecastDaysEl.addEventListener("click", (event) => {
+    if (event.target.tagName === "BUTTON") {
+      //get button id
+      let btnId = event.target.dataset.id;
+      //Loop through daysArray to find coresponding day and display its information on main screen
+      for (const element of daysArray) {
+        if (parseInt(btnId) === element.dayID) {
+          //The element in the daysArray becomes the selected day and I only need to display it
+          let selectedDay = element;
+          displaySelectedDay(selectedDay);
+        }
+      }
+    }
+  });
 }
