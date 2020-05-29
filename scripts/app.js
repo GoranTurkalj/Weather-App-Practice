@@ -11,12 +11,15 @@ const searchInput = document.getElementById("search-input");
 const searchBtn = document.getElementById("search-btn");
 let searchTerm = null; // this refers to the city name
 
-//Variables for API requests
-let units = "metric";
+//Unit toggle button
+const unitToggleBtn = document.querySelector("[data-toggle-btn]");
 
 // currentDay holds the current weather data
-
 let currentDay = null;
+//selectedDay holds the weather data of any of the daysArray elements
+let selectedDay = null;
+// isCelsius is true by default
+let isCelsius = true;
 
 // Array that holds raw forecast days data
 let forecastArray = [];
@@ -59,9 +62,7 @@ function validateInput(input) {
   let recievedInput = input.trim();
   //Regular expression - samo slova i white space
   const regex = /^[a-zA-Z\s]*$/;
-
   const result = regex.test(recievedInput);
-  console.log(result);
 
   if (result && recievedInput.length <= 30) {
     return recievedInput;
@@ -76,14 +77,14 @@ function validateInput(input) {
 async function getWeatherReport(searchTerm) {
   const weatherData = await axios
     .get(
-      `http://api.openweathermap.org/data/2.5/weather?q=${searchTerm}&appid=${appId}&units=${units}`
+      `http://api.openweathermap.org/data/2.5/weather?q=${searchTerm}&appid=${appId}&units=metric`
     )
     .catch((error) => {
       alert(error);
     });
   const forecastData = await axios
     .get(
-      `http://api.openweathermap.org/data/2.5/forecast?q=${searchTerm}&appid=${appId}&units=${units}`
+      `http://api.openweathermap.org/data/2.5/forecast?q=${searchTerm}&appid=${appId}&units=metric`
     )
     .catch((error) => {
       alert(error);
@@ -96,13 +97,12 @@ async function getWeatherReport(searchTerm) {
 
   currentDay = extractWeatherInfo(weatherData.data);
 
-  displaySelectedDay(currentDay); // selectedDay će biti bilo koji od 5 dana iz donjeg dijela, koji kad klikneme će biti ubačeni u displaySelectedDay
+  displaySelectedDay(currentDay); // currentDay se odnosi na current weather, a selectedDay će biti bilo koji od 5 dana iz donjeg dijela, koji kad klikneme će biti ubačeni u displaySelectedDay
 
   displayForecast(forecastData);
 }
 
 //Extracts weather info from passed in object (current weather data or forecast data) **************************************
-
 function extractWeatherInfo(data) {
   let dayName, dayOfMonth;
 
@@ -123,10 +123,10 @@ function extractWeatherInfo(data) {
     condition: data.weather[0].main,
     description: data.weather[0].description,
     icon: data.weather[0].icon,
-    temp: Math.round(data.main.temp),
+    temp: Math.round(data.main.temp), //by default temp data is in Celsius
     humidity: data.main.humidity,
     pressure: data.main.pressure,
-    speed: Math.round((data.wind.speed * 18) / 5),
+    speed: Math.round((data.wind.speed * 18) / 5), //Wind speed is converted from original m/s to km/h
     direction: data.wind.deg,
   };
 }
@@ -162,8 +162,18 @@ function displaySelectedDay(info) {
   description.textContent = info.description;
   //Weather Icon that appears on the screen
   icon.src = `http://openweathermap.org/img/w/${info.icon}.png`;
-  //Temperature
-  temp.textContent = info.temp + " \u00B0C";
+
+  // Temperature can be switched from C to F
+  //Treba mi varijabla koja mi govori je li celsius ili fahrenheit - vanjska varijabla
+  if (isCelsius) {
+    console.log("temp is in celsius");
+    temp.textContent = info.temp + " \u00B0C";
+  } else {
+    //F = (1.8 x C) + 32
+    console.log("temp is in fahrenheit");
+    temp.textContent = `${(1.8 * info.temp + 32).toFixed()} \u00B0F`;
+  }
+
   //Air Humidity
   humidity.textContent = info.humidity + "%";
   //Air Pressure
@@ -185,6 +195,12 @@ function displaySelectedDay(info) {
 //Event listener for a button that shows the 5 days forecast
 forecastBtn.addEventListener("click", () => {
   forecastContainer.classList.toggle("show-forecast");
+
+  //When forecast section is being closed - show the currentDay weather again
+  if (!forecastContainer.classList.contains("show-forecast") && currentDay) {
+    selectedDay = null; // selectedDay postaje null jer inače kod togglanja iz C u F bi vratilo na neki selectedDay iako je forecast section zatvoren
+    displaySelectedDay(currentDay);
+  }
 });
 
 // DisplayForecast**************************************************************************************************************
@@ -235,11 +251,29 @@ function displayForecast(forecast) {
       //Loop through daysArray to find coresponding day and display its information on main screen
       for (const element of daysArray) {
         if (parseInt(btnId) === element.dayID) {
-          //The element in the daysArray becomes the selected day and I only need to display it
-          let selectedDay = element;
+          //Selected day is declared globally, the element in the daysArray becomes the selected day and I only need to display it
+          selectedDay = element;
           displaySelectedDay(selectedDay);
         }
       }
     }
   });
+}
+
+//Event listener for unit toggle button
+unitToggleBtn.addEventListener("click", changeTempUnits);
+
+function changeTempUnits() {
+  unitToggleBtn.classList.toggle("toggled");
+  //Ako jos ne postoji selectedDay jer nije kliknut niti jedan button u forecast sekciji, onda assignam value od currentDay u selectedDay
+  if (!selectedDay) {
+    selectedDay = currentDay;
+  }
+  //isCelsius switches from true or false to the opposite
+  isCelsius = !isCelsius;
+
+  if (selectedDay) {
+    //displaySelectedDay is called to re-render the selected day with correct temperature unit
+    displaySelectedDay(selectedDay);
+  }
 }
