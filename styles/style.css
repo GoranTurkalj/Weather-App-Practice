@@ -311,8 +311,8 @@ h3 {
 }
 
 .unit__toggle {
-  -webkit-transition: all 500ms ease-out;
-  transition: all 500ms ease-out;
+  -webkit-transition: all 250ms ease-out;
+  transition: all 250ms ease-out;
   background-color: var(--clr-h1);
   border-radius: 100vmax;
   width: 4rem;
