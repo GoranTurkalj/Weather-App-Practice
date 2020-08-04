@@ -77,14 +77,14 @@ function validateInput(input) {
 async function getWeatherReport(searchTerm) {
   const weatherData = await axios
     .get(
-      `http://api.openweathermap.org/data/2.5/weather?q=${searchTerm}&appid=${appId}&units=metric`
+      `https://api.openweathermap.org/data/2.5/weather?q=${searchTerm}&appid=${appId}&units=metric`
     )
     .catch((error) => {
       alert(error);
     });
   const forecastData = await axios
     .get(
-      `http://api.openweathermap.org/data/2.5/forecast?q=${searchTerm}&appid=${appId}&units=metric`
+      `https://api.openweathermap.org/data/2.5/forecast?q=${searchTerm}&appid=${appId}&units=metric`
     )
     .catch((error) => {
       alert(error);
@@ -161,7 +161,7 @@ function displaySelectedDay(info) {
   //More detailed description of weather conditions
   description.textContent = info.description;
   //Weather Icon that appears on the screen
-  icon.src = `http://openweathermap.org/img/w/${info.icon}.png`;
+  icon.src = `https://openweathermap.org/img/w/${info.icon}.png`;
 
   // Temperature can be switched from C to F
   //Treba mi varijabla koja mi govori je li celsius ili fahrenheit - vanjska varijabla
@@ -237,7 +237,7 @@ function displayForecast(forecast) {
     forecastEl.querySelector("[data-fc-date]").textContent = fcDay.date;
     forecastEl.querySelector(
       "[data-fc-icon]"
-    ).src = `http://openweathermap.org/img/w/${fcDay.icon}.png`;
+    ).src = `https://openweathermap.org/img/w/${fcDay.icon}.png`;
     //buttoni dobivaju identičan id kakav ima  fcDay
     forecastEl.querySelector("button").dataset.id = fcDay.dayID;
     forecastDaysEl.append(forecastEl);
