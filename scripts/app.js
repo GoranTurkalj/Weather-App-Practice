@@ -161,6 +161,7 @@ function displaySelectedDay(info) {
   //More detailed description of weather conditions
   description.textContent = info.description;
   //Weather Icon that appears on the screen
+  icon.style.visibility = "visible";
   icon.src = `https://openweathermap.org/img/w/${info.icon}.png`;
 
   // Temperature can be switched from C to F
